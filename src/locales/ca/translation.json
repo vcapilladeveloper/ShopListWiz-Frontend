@@ -1,0 +1,95 @@
+{
+    "common": {
+        "loading": "Carregant...",
+        "error": "Error",
+        "logout": "Tancar Sessió",
+        "backToHome": "Tornar a la pàgina principal"
+    },
+    "dashboard": {
+        "apiConfigError": "La ruta API 'ME' no està configurada.",
+        "fetchUserError": "Error {statusCode}: No s'ha pogut obtenir la informació de l'usuari.",
+        "loadUserDataError": "S'ha produït un error en carregar les dades de l'usuari.",
+        "pageTitle": "Tauler de Control",
+        "labels": {
+            "name": "Nom:",
+            "email": "Correu electrònic:"
+        }
+    },
+    "navbar": {
+        "openMainMenu": "Obrir menú principal",
+        "home": "Inici",
+        "about": "Quant a",
+        "services": "Serveis",
+        "pricing": "Preus",
+        "contact": "Contacte",
+        "userMenu": {
+            "open": "Obrir menú d'usuari",
+            "defaultName": "Usuari",
+            "defaultEmail": "email@example.com",
+            "profile": "Perfil",
+            "language": "Idioma",
+            "languages": {
+                "en": "Anglès",
+                "es": "Espanyol",
+                "ca": "Català"
+            }
+        }
+    },
+    "login": {
+        "pageTitle": "Inicia sessió al teu compte",
+        "emailLabel": "Correu electrònic",
+        "emailPlaceholder": "Correu electrònic",
+        "passwordLabel": "Contrasenya",
+        "passwordPlaceholder": "Contrasenya",
+        "forgotPassword": "Has oblidat la teva contrasenya?",
+        "submitButton": "Iniciar Sessió",
+        "submitButtonLoading": "Iniciant Sessió...",
+        "noAccount": "No tens un compte?",
+        "signUpLink": "Registra't aquí",
+        "loginFailed": "Error d'inici de sessió. Si us plau, comprova les teves credencials.",
+        "genericError": "S'ha produït un error desconegut."
+    },
+    "signup": {
+        "pageTitle": "Crea el teu compte",
+        "nameLabel": "Nom",
+        "namePlaceholder": "Nom complet",
+        "emailLabel": "Correu electrònic",
+        "emailPlaceholder": "Correu electrònic",
+        "passwordLabel": "Contrasenya",
+        "passwordPlaceholder": "Contrasenya",
+        "confirmPasswordLabel": "Confirmar Contrasenya",
+        "confirmPasswordPlaceholder": "Confirmar contrasenya",
+        "passwordsDoNotMatch": "Les contrasenyes no coincideixen.",
+        "passwordTooShort": "La contrasenya ha de tenir almenys {{minLength}} caràcters.",
+        "registrationError": "Error {{statusCode}}: Error en el registre.",
+        "registrationSuccess": "Registre reeixit! Ara pots iniciar sessió.",
+        "genericError": "No s'ha pogut completar el registre. Torna-ho a provar.",
+        "submitButton": "Crear Compte",
+        "submitButtonLoading": "Registrant...",
+        "alreadyHaveAccount": "Ja tens un compte?",
+        "loginLink": "Inicia sessió aquí"
+    },
+    "resetPassword": {
+        "pageTitle": "Restablir Contrasenya",
+        "instructions": "Introdueix el teu correu electrònic i t'enviarem instruccions per restablir la teva contrasenya.",
+        "emailLabel": "Correu electrònic",
+        "emailPlaceholder": "Correu electrònic",
+        "submitButton": "Enviar Enllaç de Restabliment",
+        "submitButtonLoading": "Enviant...",
+        "rememberedPassword": "Has recordat la teva contrasenya?",
+        "loginLink": "Inicia sessió",
+        "endpointMissing": "La funcionalitat de restabliment de contrasenya no està configurada (endpoint no definit).",
+        "requestFailed": "No s'ha pogut processar la sol·licitud.",
+        "serverError": "Error {{statusCode}}: {{statusText}}",
+        "unknownServerError": "Error desconegut del servidor.",
+        "invalidResponse": "Error {{statusCode}}: {{statusText}}",
+        "successMessage": "Si existeix un compte amb aquest correu, rebràs un enllaç per restablir la teva contrasenya.",
+        "genericError": "S'ha produït un error. Torna-ho a provar."
+    },
+    "welcome": {
+        "title": "Benvingut a ShopListWiz",
+        "subtitle": "El teu assistent intel·ligent per crear i gestionar llistes de la compra. Simplifica les teves compres, estalvia temps i no oblidis res.",
+        "loginButton": "Iniciar Sessió",
+        "signupButton": "Registrar-se"
+    }
+}

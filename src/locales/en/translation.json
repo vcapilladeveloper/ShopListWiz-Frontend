@@ -1,0 +1,95 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "logout": "Log Out",
+        "backToHome": "Back to Home"
+    },
+    "dashboard": {
+        "apiConfigError": "The 'ME' API route is not configured.",
+        "fetchUserError": "Error {statusCode}: Could not retrieve user information.",
+        "loadUserDataError": "An error occurred while loading user data.",
+        "pageTitle": "Dashboard",
+        "labels": {
+            "name": "Name:",
+            "email": "Email:"
+        }
+    },
+    "navbar": {
+        "openMainMenu": "Open main menu",
+        "home": "Home",
+        "about": "About",
+        "services": "Services",
+        "pricing": "Pricing",
+        "contact": "Contact",
+        "userMenu": {
+            "open": "Open user menu",
+            "defaultName": "User",
+            "defaultEmail": "email@example.com",
+            "profile": "Profile",
+            "language": "Language",
+            "languages": {
+                "en": "English",
+                "es": "Spanish",
+                "ca": "Catalan"
+            }
+        }
+    },
+    "login": {
+        "pageTitle": "Sign in to your account",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Email address",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password",
+        "forgotPassword": "Forgot your password?",
+        "submitButton": "Sign In",
+        "submitButtonLoading": "Signing In...",
+        "noAccount": "Don't have an account?",
+        "signUpLink": "Sign up here",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "genericError": "An unknown error occurred."
+    },
+    "signup": {
+        "pageTitle": "Create your account",
+        "nameLabel": "Name",
+        "namePlaceholder": "Full name",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Email address",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm password",
+        "passwordsDoNotMatch": "Passwords do not match.",
+        "passwordTooShort": "Password must be at least {{minLength}} characters long.",
+        "registrationError": "Error {{statusCode}}: Registration error.",
+        "registrationSuccess": "Registration successful! You can now log in.",
+        "genericError": "Could not complete registration. Please try again.",
+        "submitButton": "Create Account",
+        "submitButtonLoading": "Registering...",
+        "alreadyHaveAccount": "Already have an account?",
+        "loginLink": "Log in here"
+    },
+    "resetPassword": {
+        "pageTitle": "Reset Password",
+        "instructions": "Enter your email address and we'll send you instructions to reset your password.",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Email address",
+        "submitButton": "Send Reset Link",
+        "submitButtonLoading": "Sending...",
+        "rememberedPassword": "Remembered your password?",
+        "loginLink": "Log in",
+        "endpointMissing": "Password reset functionality is not configured (endpoint not defined).",
+        "requestFailed": "Could not process the request.",
+        "serverError": "Error {{statusCode}}: {{statusText}}",
+        "unknownServerError": "Unknown server error.",
+        "invalidResponse": "Error {{statusCode}}: {{statusText}}",
+        "successMessage": "If an account with that email exists, you will receive a link to reset your password.",
+        "genericError": "An error occurred. Please try again."
+    },
+    "welcome": {
+        "title": "Welcome to ShopListWiz",
+        "subtitle": "Your smart assistant to create and manage shopping lists. Simplify your shopping, save time, and never forget anything.",
+        "loginButton": "Log In",
+        "signupButton": "Sign Up"
+    }
+}

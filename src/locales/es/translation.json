@@ -1,0 +1,95 @@
+{
+    "common": {
+        "loading": "Cargando...",
+        "error": "Error",
+        "logout": "Cerrar Sesión",
+        "backToHome": "Volver a la página principal"
+    },
+    "dashboard": {
+        "apiConfigError": "La ruta API 'ME' no está configurada.",
+        "fetchUserError": "Error {statusCode}: No se pudo obtener la información del usuario.",
+        "loadUserDataError": "Ocurrió un error al cargar los datos del usuario.",
+        "pageTitle": "Dashboard",
+        "labels": {
+            "name": "Nombre:",
+            "email": "Email:"
+        }
+    },
+    "navbar": {
+        "openMainMenu": "Abrir menú principal",
+        "home": "Inicio",
+        "about": "Acerca de",
+        "services": "Servicios",
+        "pricing": "Precios",
+        "contact": "Contacto",
+        "userMenu": {
+            "open": "Abrir menú de usuario",
+            "defaultName": "Usuario",
+            "defaultEmail": "email@example.com",
+            "profile": "Perfil",
+            "language": "Idioma",
+            "languages": {
+                "en": "Inglés",
+                "es": "Español",
+                "ca": "Catalán"
+            }
+        }
+    },
+    "login": {
+        "pageTitle": "Inicia sesión en tu cuenta",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Contraseña",
+        "forgotPassword": "¿Olvidaste tu contraseña?",
+        "submitButton": "Iniciar Sesión",
+        "submitButtonLoading": "Iniciando Sesión...",
+        "noAccount": "¿No tienes una cuenta?",
+        "signUpLink": "Regístrate aquí",
+        "loginFailed": "Login fallido. Por favor, comprueba tus credenciales.",
+        "genericError": "Ocurrió un error desconocido."
+    },
+    "signup": {
+        "pageTitle": "Crea tu cuenta",
+        "nameLabel": "Nombre",
+        "namePlaceholder": "Nombre completo",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "passwordPlaceholder": "Contraseña",
+        "confirmPasswordLabel": "Confirmar Contraseña",
+        "confirmPasswordPlaceholder": "Confirmar contraseña",
+        "passwordsDoNotMatch": "Las contraseñas no coinciden.",
+        "passwordTooShort": "La contraseña debe tener al menos {{minLength}} caracteres.",
+        "registrationError": "Error {{statusCode}}: Error en el registro.",
+        "registrationSuccess": "¡Registro exitoso! Ahora puedes iniciar sesión.",
+        "genericError": "No se pudo completar el registro. Inténtalo de nuevo.",
+        "submitButton": "Crear Cuenta",
+        "submitButtonLoading": "Registrando...",
+        "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+        "loginLink": "Inicia sesión aquí"
+    },
+    "resetPassword": {
+        "pageTitle": "Restablecer Contraseña",
+        "instructions": "Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.",
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "Correo electrónico",
+        "submitButton": "Enviar Enlace de Restablecimiento",
+        "submitButtonLoading": "Enviando...",
+        "rememberedPassword": "¿Recordaste tu contraseña?",
+        "loginLink": "Inicia sesión",
+        "endpointMissing": "La funcionalidad de reseteo de contraseña no está configurada (endpoint no definido).",
+        "requestFailed": "No se pudo procesar la solicitud.",
+        "serverError": "Error {{statusCode}}: {{statusText}}",
+        "unknownServerError": "Error desconocido del servidor.",
+        "invalidResponse": "Error {{statusCode}}: {{statusText}}",
+        "successMessage": "Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña.",
+        "genericError": "Ocurrió un error. Inténtalo de nuevo."
+    },
+    "welcome": {
+        "title": "Bienvenido a ShopListWiz",
+        "subtitle": "Tu asistente inteligente para crear y gestionar listas de la compra. Simplifica tus compras, ahorra tiempo y no olvides nada.",
+        "loginButton": "Iniciar Sesión",
+        "signupButton": "Registrarse"
+    }
+}
