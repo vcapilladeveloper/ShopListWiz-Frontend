@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link }
 	from 'react-router-dom';
-import { API_ENDPOINTS } from '../config/constants'; // Asumimos que tendrás un endpoint para esto
+import { API_ENDPOINTS } from '../config/constants';
 import { useTranslation } from 'react-i18next';
 
 const ResetPassword = () => {
@@ -18,9 +18,9 @@ const ResetPassword = () => {
 		setMessage('');
 		setError('');
 
-		// Asumimos un endpoint como API_ENDPOINTS.REQUEST_PASSWORD_RESET
-		// Deberás añadirlo a tu archivo constants.js, ej:
-		// REQUEST_PASSWORD_RESET: `${API_BASE_URL}/password/request-reset`
+
+
+
 		if (!API_ENDPOINTS.REQUEST_RESET) {
 			setError(t('resetPassword.endpointMissing'));
 			setIsLoading(false);
@@ -36,30 +36,30 @@ const ResetPassword = () => {
 			});
 
 			if (!response.ok) {
-				// Intenta parsear la respuesta de error como JSON, ya que podría contener un mensaje
+
 				let errorMessage = t('resetPassword.requestFailed');
 				try {
 					const errorData = await response.json();
 					if (errorData && errorData.message) {
 						errorMessage = errorData.message;
 					} else {
-						// Si no hay errorData.message, usa el statusText o un mensaje genérico
+
 						errorMessage = t('resetPassword.serverError', { statusCode: response.status, statusText: response.statusText || t('resetPassword.unknownServerError') });
 					}
 				} catch (e) {
-					// Si la respuesta de error no es JSON o está vacía
+
 					errorMessage = t('resetPassword.invalidResponse', { statusCode: response.status, statusText: response.statusText || t('resetPassword.unknownServerError') });
 					console.error("La respuesta de error no era JSON válido o estaba vacía:", e);
 				}
 				throw new Error(errorMessage);
 			}
 
-			// Si response.ok es true, la solicitud probablemente fue exitosa.
-			// El backend podría no devolver un cuerpo JSON para esta solicitud específica (ej. 204 No Content) o un mensaje simple.
-			// Podemos establecer directamente el mensaje de éxito.
+
+
+
 
 			setMessage(t('resetPassword.successMessage'));
-			setEmail(''); // Limpiar el campo
+			setEmail('');
 		} catch (err) {
 			setError(err.message || t('resetPassword.genericError'));
 		} finally {
@@ -69,7 +69,6 @@ const ResetPassword = () => {
 
 	return (
 		<div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-			{/* Flecha para volver a la página principal */}
 			<Link to="/" className="absolute top-6 left-6 text-indigo-600 hover:text-indigo-800 transition-colors duration-200 z-10" title={t('common.backToHome')}>
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8">
 					<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

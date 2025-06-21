@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCookie } from '../utils/cookieUtils'; // Importar utilidad de cookies
+import { getCookie } from '../utils/cookieUtils';
 import { useTranslation } from 'react-i18next';
 
 const Welcome = () => {
 	const navigate = useNavigate();
-	const { t, i18n } = useTranslation(); // Obtenemos i18n para cambiar el idioma y leer el actual
+	const { t, i18n } = useTranslation();
 	const currentLanguage = i18n.language;
 
-	// Definimos los idiomas disponibles para el selector
-	// Reutilizamos las claves de traducción del navbar para los nombres de los idiomas
 	const availableLanguages = {
 		en: { name: t('navbar.userMenu.languages.en') },
 		es: { name: t('navbar.userMenu.languages.es') },
@@ -18,7 +16,7 @@ const Welcome = () => {
 	useEffect(() => {
 		const token = getCookie('userToken');
 		if (token) {
-			// Si hay un token, redirigir al dashboard
+		
 			navigate('/dashboard');
 		}
 	}, [navigate]);
@@ -29,7 +27,6 @@ const Welcome = () => {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex flex-col items-center justify-center text-white p-6 relative">
-			{/* Selector de Idioma */}
 			<div className="absolute top-4 right-4 md:top-6 md:right-6 z-20">
 				<div className="flex space-x-1 md:space-x-2">
 					{Object.keys(availableLanguages).map((lng) => (
@@ -38,8 +35,8 @@ const Welcome = () => {
 							onClick={() => changeLanguage(lng)}
 							className={`px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors duration-200
 										${currentLanguage === lng
-											? 'bg-white text-indigo-600 shadow-md' // Estilo para el idioma activo
-											: 'bg-transparent text-white hover:bg-white hover:bg-opacity-20 border border-white border-opacity-50 hover:border-opacity-75' // Estilo para idiomas inactivos
+											? 'bg-white text-indigo-600 shadow-md'
+											: 'bg-transparent text-white hover:bg-white hover:bg-opacity-20 border border-white border-opacity-50 hover:border-opacity-75'
 										}`}
 						>
 							{availableLanguages[lng].name}

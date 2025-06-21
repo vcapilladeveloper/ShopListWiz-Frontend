@@ -3,7 +3,11 @@
         "loading": "Cargando...",
         "error": "Error",
         "logout": "Cerrar Sesión",
-        "backToHome": "Volver a la página principal"
+        "backToHome": "Volver a la página principal",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "save": "Guardar",
+        "cancel": "Cancelar"
     },
     "dashboard": {
         "apiConfigError": "La ruta API 'ME' no está configurada.",
@@ -18,10 +22,8 @@
     "navbar": {
         "openMainMenu": "Abrir menú principal",
         "home": "Inicio",
-        "about": "Acerca de",
-        "services": "Servicios",
-        "pricing": "Precios",
-        "contact": "Contacto",
+        "ingredients": "Ingredients",
+        "recipes": "Recipes",
         "userMenu": {
             "open": "Abrir menú de usuario",
             "defaultName": "Usuario",
@@ -91,5 +93,24 @@
         "subtitle": "Tu asistente inteligente para crear y gestionar listas de la compra. Simplifica tus compras, ahorra tiempo y no olvides nada.",
         "loginButton": "Iniciar Sesión",
         "signupButton": "Registrarse"
+    },
+    "ingredientsPage": {
+        "title": "Gestionar Ingredientes",
+        "addIngredient": "Añadir Ingrediente",
+        "editIngredient": "Editar Ingrediente",
+        "nameEnglish": "Nombre (Inglés)",
+        "nameSpanish": "Nombre (Español)",
+        "nameCatalan": "Nombre (Catalán)",
+        "nutritionalValues": "Valores Nutricionales (por 100g)",
+        "calories": "Calorías",
+        "protein": "Proteína (g)",
+        "carbohydrates": "Carbohidratos (g)",
+        "fat": "Grasa (g)",
+        "isGlutenFree": "Sin Gluten",
+        "isVegan": "Vegano",
+        "isVegetarian": "Vegetariano",
+        "actions": "Acciones",
+        "confirmDelete": "¿Estás seguro de que quieres eliminar este ingrediente?",
+        "noIngredients": "No se encontraron ingredientes. ¡Añade algunos!"
     }
 }

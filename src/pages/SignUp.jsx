@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS } from '../config/constants'; // Asegúrate que esta ruta es correcta y que API_ENDPOINTS.SIGNUP es 'http://localhost:8081/api/signup'
-import { setCookie, getCookie } from '../utils/cookieUtils'; // Asegúrate que esta ruta es correcta y que setCookie está definido
+import { API_ENDPOINTS } from '../config/constants';
+import { setCookie, getCookie } from '../utils/cookieUtils';
 import { useTranslation } from 'react-i18next';
 
 const SignUp = () => {
@@ -13,15 +13,15 @@ const SignUp = () => {
 		confirmPassword: '',
 	});
 	const [error, setError] = useState('');
-	const [successMessage, setSuccessMessage] = useState(''); // Para feedback de éxito
-	const [isLoading, setIsLoading] = useState(false); // Para feedback de carga
+	const [successMessage, setSuccessMessage] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		// Verificar si ya hay un token en las cookies
+
 		const token = getCookie('userToken');
 		if (token) {
-			// Si el token existe, redirigir al dashboard
+
 			navigate('/dashboard');
 		}
 	}
@@ -33,7 +33,7 @@ const SignUp = () => {
 			...prevState,
 			[name]: value
 		}));
-		// Limpiar errores al empezar a escribir de nuevo
+
 		if (error) setError('');
 		if (successMessage) setSuccessMessage('');
 	};
@@ -50,7 +50,7 @@ const SignUp = () => {
 			return;
 		}
 
-		// Validaciones adicionales básicas (puedes expandirlas)
+
 		if (formData.password.length < 8) {
 			setError(t('signup.passwordTooShort', { minLength: 8 }));
 			setIsLoading(false);
@@ -62,8 +62,8 @@ const SignUp = () => {
 				name: formData.name,
 				email: formData.email,
 				password: formData.password,
-				roles: ['user'], // O ['admin'] si es lo que necesitas, o hacerlo configurable si es necesario.
-				// Para un signup general, 'user' suele ser el rol por defecto.
+				roles: ['user'],
+
 			};
 
 			const response = await fetch(API_ENDPOINTS.SIGNUP, {
@@ -74,27 +74,27 @@ const SignUp = () => {
 				body: JSON.stringify(payload),
 			});
 
-			const data = await response.json(); // Intenta parsear JSON incluso si hay error, a veces el error viene en JSON
+			const data = await response.json();
 
 			if (!response.ok) {
-				// data.message es común, pero podría ser data.error u otra estructura
+
 				throw new Error(data.message || data.error || t('signup.registrationError', { statusCode: response.status }));
 			}
 
 			setSuccessMessage(t('signup.registrationSuccess'));
 			console.log('Signup successful:', data);
-			// Podrías resetear el formulario o redirigir al usuario
+
 			setFormData({
-				name: '', // Corregido de userName a name para coincidir con el estado inicial
+				name: '',
 				email: '',
 				password: '',
 				confirmPassword: '',
 			});
-			// Ejemplo de redirección (necesitarías react-router-dom y su hook useNavigate):
-			// const navigate = useNavigate();
-			// navigate('/login');
-			setCookie('userToken', data.value, 30); // Guardar el token en cookies por 7 días
-			navigate('/dashboard'); // Redirigir a la página de dashboard
+
+
+
+			setCookie('userToken', data.value, 30);
+			navigate('/dashboard');
 
 		} catch (err) {
 			setError(err.message || t('signup.genericError'));
@@ -105,7 +105,6 @@ const SignUp = () => {
 
 	return (
 		<div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-			{/* Flecha para volver a la página principal */}
 			<Link to="/" className="absolute top-6 left-6 text-indigo-600 hover:text-indigo-800 transition-colors duration-200 z-10" title={t('common.backToHome')}>
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8">
 					<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

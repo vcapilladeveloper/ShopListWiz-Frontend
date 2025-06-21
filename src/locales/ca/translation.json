@@ -3,7 +3,11 @@
         "loading": "Carregant...",
         "error": "Error",
         "logout": "Tancar Sessió",
-        "backToHome": "Tornar a la pàgina principal"
+        "backToHome": "Tornar a la pàgina principal",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "save": "Guardar",
+        "cancel": "Cancelar"
     },
     "dashboard": {
         "apiConfigError": "La ruta API 'ME' no està configurada.",
@@ -18,10 +22,8 @@
     "navbar": {
         "openMainMenu": "Obrir menú principal",
         "home": "Inici",
-        "about": "Quant a",
-        "services": "Serveis",
-        "pricing": "Preus",
-        "contact": "Contacte",
+        "ingredients": "Ingredients",
+        "recipes": "Recipes",
         "userMenu": {
             "open": "Obrir menú d'usuari",
             "defaultName": "Usuari",
@@ -91,5 +93,24 @@
         "subtitle": "El teu assistent intel·ligent per crear i gestionar llistes de la compra. Simplifica les teves compres, estalvia temps i no oblidis res.",
         "loginButton": "Iniciar Sessió",
         "signupButton": "Registrar-se"
+    },
+    "ingredientsPage": {
+        "title": "Gestionar Ingredientes",
+        "addIngredient": "Añadir Ingrediente",
+        "editIngredient": "Editar Ingrediente",
+        "nameEnglish": "Nombre (Inglés)",
+        "nameSpanish": "Nombre (Español)",
+        "nameCatalan": "Nombre (Catalán)",
+        "nutritionalValues": "Valores Nutricionales (por 100g)",
+        "calories": "Calorías",
+        "protein": "Proteína (g)",
+        "carbohydrates": "Carbohidratos (g)",
+        "fat": "Grasa (g)",
+        "isGlutenFree": "Sin Gluten",
+        "isVegan": "Vegano",
+        "isVegetarian": "Vegetariano",
+        "actions": "Acciones",
+        "confirmDelete": "¿Estás seguro de que quieres eliminar este ingrediente?",
+        "noIngredients": "No se encontraron ingredientes. ¡Añade algunos!"
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import ResetPassword from './ResetPassword'; // Tu componente existente para solicitar el reseteo
-import SetNewPassword from './SetNewPassword'; // El nuevo componente para establecer la contraseña
+import ResetPassword from './ResetPassword';
+import SetNewPassword from './SetNewPassword';
 
 const HandleResetPasswordPage = () => {
     const [searchParams] = useSearchParams();

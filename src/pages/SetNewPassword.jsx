@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { API_ENDPOINTS } from '../config/constants'; // Asumimos que tendrás un endpoint para esto
+import { API_ENDPOINTS } from '../config/constants';
 
 const SetNewPassword = ({ token }) => {
 	const navigate = useNavigate();
@@ -13,21 +13,21 @@ const SetNewPassword = ({ token }) => {
 	useEffect(() => {
 		if (!token) {
 			setError('Token de restablecimiento no válido o ausente.');
-			// Opcionalmente redirigir si no hay token
-			// setTimeout(() => navigate('/login'), 3000);
+
+
 		} else {
-			// Si el token (prop) existe, limpiar cualquier mensaje de error previo.
+
 			setError('');
 		}
 	}, [token]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Limpiar mensajes de estado antes de cualquier validación o lógica
+
 		setMessage('');
 		setError('');
 
-		// Validar usando el token de la prop
+
 		if (!token) {
 			setError('Token de restablecimiento no válido o ausente. No se puede enviar el formulario.');
 			return;
@@ -41,9 +41,9 @@ const SetNewPassword = ({ token }) => {
 			return;
 		}
 
-		// Asumimos un endpoint como API_ENDPOINTS.RESET_PASSWORD
-		// Deberás añadirlo a tu archivo constants.js, ej:
-		// SET_NEW_PASSWORD: `${API_BASE_URL}/password/set-new`
+
+
+
 		if (!API_ENDPOINTS.RESET_PASSWORD) {
 			setError("La funcionalidad de establecer nueva contraseña no está configurada (endpoint no definido).");
 			setIsLoading(false);
@@ -56,11 +56,11 @@ const SetNewPassword = ({ token }) => {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ token, password }), // Enviar token y nueva contraseña
+				body: JSON.stringify({ token, password }),
 			});
 
 			if (!response.ok) {
-				// Intentar leer el cuerpo del error como JSON solo si la respuesta no fue ok
+
 				let errorMessage = 'No se pudo restablecer la contraseña.';
 				try {
 					const errorData = await response.json();
@@ -70,17 +70,17 @@ const SetNewPassword = ({ token }) => {
 						errorMessage = `Error ${response.status}: ${response.statusText || 'Error desconocido del servidor.'}`;
 					}
 				} catch (e) {
-					// Si el cuerpo del error no es JSON o está vacío
+
 					errorMessage = `Error ${response.status}: ${response.statusText || 'Respuesta no válida del servidor.'}`;
 					console.error("La respuesta de error no era JSON válido o estaba vacía:", e);
 				}
 				throw new Error(errorMessage);
 			}
-			// Si response.ok es true, la operación fue exitosa. No es necesario parsear JSON si el backend no envía cuerpo.
+
 			setMessage('Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión.');
 			setPassword('');
 			setConfirmPassword('');
-			setTimeout(() => navigate('/login'), 3000); // Redirigir a login después de un tiempo
+			setTimeout(() => navigate('/login'), 3000);
 		} catch (err) {
 			setError(err.message || 'Ocurrió un error. Inténtalo de nuevo.');
 		} finally {
@@ -90,7 +90,6 @@ const SetNewPassword = ({ token }) => {
 
 	return (
 		<div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-			{/* Flecha para volver a la página principal */}
 			<Link to="/" className="absolute top-6 left-6 text-indigo-600 hover:text-indigo-800 transition-colors duration-200 z-10" title="Volver a la página principal">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8">
 					<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
