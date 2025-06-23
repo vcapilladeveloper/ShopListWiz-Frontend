@@ -7,7 +7,8 @@
         "edit": "Editar",
         "delete": "Eliminar",
         "save": "Guardar",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar",
+        "saving": "Guardant..."
     },
     "dashboard": {
         "apiConfigError": "La ruta API 'ME' no està configurada.",
@@ -121,6 +122,8 @@
         "isVegetarian": "Vegetarià",
         "actions": "Acciones",
         "confirmDelete": "Estàs segur que vols eliminar aquest ingredient?",
-        "noIngredients": "No s'han trobat ingredients. Afegeix-ne alguns!"
+        "noIngredients": "No s'han trobat ingredients. Afegeix-ne alguns!",
+        "searchPlaceholder": "Cercar per nom...",
+        "noResults": "No hi ha ingredients que coincideixin amb la teva cerca."
     }
 }

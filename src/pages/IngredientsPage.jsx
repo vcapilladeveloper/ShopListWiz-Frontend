@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { API_ENDPOINTS } from '../config/constants';
 import { getCookie, deleteCookie } from '../utils/cookieUtils';
 import { useNavigate } from 'react-router-dom';
-import { useRef } from 'react'; // Import useRef
 const initialFormState = {
     english: '',
     spanish: '',
@@ -44,6 +43,11 @@ const nutritionalKeyToLabelMap = {
     zinc: 'zinc',
 };
 
+const removeAccents = (str) => {
+    if (!str) return '';
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
 const IngredientsPage = () => {
     const { t } = useTranslation();
     const [ingredients, setIngredients] = useState([]);
@@ -53,7 +57,9 @@ const IngredientsPage = () => {
     const [editingIngredient, setEditingIngredient] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [formData, setFormData] = useState(initialFormState);
-    const formRef = useRef(null); // Create a ref for the form
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -122,6 +128,7 @@ const IngredientsPage = () => {
             setEditingIngredient(null);
             setFormData(initialFormState);
         }
+        setFormError(null);
         setIsEditMode(mode === 'edit');
         setIsModalOpen(true);
     };
@@ -132,6 +139,7 @@ const IngredientsPage = () => {
         setEditingIngredient(null);
         setIsEditMode(false);
         setFormData(initialFormState);
+        setFormError(null);
     };
 
     const handleChange = (e) => {
@@ -153,28 +161,60 @@ const IngredientsPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => { // Keep the event parameter
-        console.log("handleSubmit triggered. Event:", e);
-        console.log("Event type:", e.type);
-        console.log("Event isTrusted:", e.isTrusted);
-        console.log("Event target:", e.target);
-        console.log("Current isEditMode:", isEditMode);
-        console.log("Current editingIngredient:", editingIngredient);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setFormError(null);
+        setIsSubmitting(true);
 
-        e.preventDefault(); // Crucial to prevent default browser form submission (page reload)
-
-        if (editingIngredient) {
-            console.log("Editing existing ingredient:", editingIngredient.id);
-            setIngredients(prevIngredients =>
-                prevIngredients.map(ing =>
-                    ing.id === editingIngredient.id ? { ...formData, id: editingIngredient.id } : ing
-                )
-            );
-        } else {
-            const newIngredient = { ...formData };
-            setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
+        const token = getCookie('userToken');
+        if (!token) {
+            navigate('/login');
+            setIsSubmitting(false);
+            return;
         }
-        handleCloseModal(); // Close modal after processing
+
+        const payload = {
+            id: editingIngredient ? editingIngredient.id : undefined,
+            english: formData.english,
+            spanish: formData.spanish,
+            catalan: formData.catalan,
+            nutritional_values_per_100g: formData.nutritionalValuesPer100G,
+            is_gluten_free: formData.isGlutenFree,
+            is_vegan: formData.isVegan,
+            is_vegetarian: formData.isVegetarian,
+        };
+
+        if (!editingIngredient) {
+            delete payload.id;
+        }
+
+        try {
+            const url = API_ENDPOINTS.INGREDIENTS + '/update';
+            const method = 'PUT';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            const resultData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(resultData.reason || resultData.message || `Failed to ${method === 'PUT' ? 'update' : 'create'} ingredient`);
+            }
+
+            if (editingIngredient) {
+                setIngredients(prev => prev.map(ing => (ing.id === editingIngredient.id ? resultData : ing)));
+            } else {
+                setIngredients(prev => [...prev, resultData]);
+            }
+            handleCloseModal();
+        } catch (err) {
+            setFormError(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (isLoading) {
@@ -197,6 +237,14 @@ const IngredientsPage = () => {
         );
     };
 
+    const filteredIngredients = ingredients.filter(ing => {
+        const term = removeAccents(searchTerm.toLowerCase());
+        return (
+            removeAccents(ing.english.toLowerCase()).includes(term) ||
+            removeAccents(ing.spanish.toLowerCase()).includes(term) ||
+            removeAccents(ing.catalan.toLowerCase()).includes(term)
+        );
+    });
     return (
         <div className="container mx-auto p-4 md:p-8">
             <div className="flex justify-between items-center mb-6">
@@ -207,6 +255,15 @@ const IngredientsPage = () => {
                 >
                     {t('ingredientsPage.addIngredient')}
                 </button>
+            </div>
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder={t('ingredientsPage.searchPlaceholder')}
+                    className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
             <div className="bg-white shadow-md rounded-lg overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -219,14 +276,16 @@ const IngredientsPage = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {ingredients.length === 0 && (
+                        {filteredIngredients.length === 0 ? (
                             <tr>
                                 <td colSpan="4" className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {t('ingredientsPage.noIngredients')}
+                                    {searchTerm
+                                        ? t('ingredientsPage.noResults')
+                                        : t('ingredientsPage.noIngredients')}
                                 </td>
                             </tr>
-                        )}
-                        {ingredients.map((ing) => (
+                        ) : (
+                            filteredIngredients.map((ing) => (
                             <tr key={ing.id} onClick={() => handleOpenModal(ing, 'view')} className="cursor-pointer hover:bg-gray-100 transition-colors duration-150">
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.english}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.spanish}</td>
@@ -236,7 +295,8 @@ const IngredientsPage = () => {
                                     {/* <button onClick={(e) => { e.stopPropagation(); handleDelete(ing.id); }} className="text-red-600 hover:text-red-900">{t('common.delete')}</button> */}
                                 </td>
                             </tr>
-                        ))}
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -255,6 +315,7 @@ const IngredientsPage = () => {
                                 : t('ingredientsPage.viewIngredient')
                             }
                         </h2>
+                        {formError && <p className="mb-4 text-center text-sm text-red-600 bg-red-100 p-3 rounded-md">{formError}</p>}
                         {isEditMode ? ( // Form is rendered only in edit mode
                             <form id="ingredient-form" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -375,11 +436,13 @@ const IngredientsPage = () => {
                                     <button type="button" onClick={handleCloseModal} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition duration-150 ease-in-out">
                                         {t('common.cancel')}
                                     </button>
-                                    <button
-                                        type="button" // Change to type="button"
-                                        onClick={() => formRef.current && formRef.current.submit()} // Manually trigger form submission
-                                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
-                                        {t('common.save')}
+                                    <button // Changed type to "button" and added onClick handler
+                                        type="button"
+                                        onClick={handleSubmit}
+                                        form="ingredient-form"
+                                        disabled={isSubmitting}
+                                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out disabled:bg-green-300 disabled:cursor-not-allowed">
+                                        {isSubmitting ? t('common.saving') : t('common.save')}
                                     </button>
                                 </>
                             ) : (
@@ -388,12 +451,7 @@ const IngredientsPage = () => {
                                         {t('common.cancel')}
                                     </button>
                                     <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleOpenModal(editingIngredient, 'edit');
-                                        }}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
+                                        type="button" onClick={() => setIsEditMode(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
                                     >
                                         {t('common.edit')}
                                     </button>
