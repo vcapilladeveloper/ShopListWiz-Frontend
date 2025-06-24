@@ -4,69 +4,31 @@ import { API_ENDPOINTS } from '../config/constants';
 import { getCookie, deleteCookie } from '../utils/cookieUtils';
 import { useNavigate } from 'react-router-dom';
 const initialFormState = {
-    english: '',
-    spanish: '',
-    catalan: '',
-    nutritionalValuesPer100G: {
-        calories: '',
-        carbohydrates_g: '',
-        protein_g: '',
-        fat_g: '',
-        fiber_g: '',
-        vitamin_D: '',
-        vitamin_B12: '',
-        vitamin_C: '',
-        iron: '',
-        saturated_fat: '',
-        unsaturated_fat: '',
-        magnesium: '',
-        zinc: '',
-    },
-    isGlutenFree: false,
-    isVegan: false,
-    isVegetarian: false,
-};
-
-const nutritionalKeyToLabelMap = {
-    calories: 'calories',
-    protein_g: 'protein',
-    carbohydrates_g: 'carbohydrates',
-    fat_g: 'fat',
-    fiber_g: 'fiber',
-    vitamin_D: 'vitaminD',
-    vitamin_B12: 'vitaminB12',
-    vitamin_C: 'vitaminC',
-    iron: 'iron',
-    saturated_fat: 'saturatedFat',
-    unsaturated_fat: 'unsaturatedFat',
-    magnesium: 'magnesium',
-    zinc: 'zinc',
-};
+    name: '',
+    ingredients: [],
+    isForDinner: false
+}
 
 const removeAccents = (str) => {
     if (!str) return '';
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 };
 
-const IngredientsPage = () => {
+const RecipesPage = () => {
     const { t } = useTranslation();
-    const [ingredients, setIngredients] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingIngredient, setEditingIngredient] = useState(null);
-    const [isEditMode, setIsEditMode] = useState(false);
+    const [recipes, setRecipes] = useState([]);
     const [formData, setFormData] = useState(initialFormState);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formError, setFormError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchIngredients();
-    }, [navigate, t]);
+        fetchRecipes();
+    }, []);
 
-    const fetchIngredients= async () => {
+    const fetchRecipes = async () => {
         const token = getCookie('userToken');
         if (!token) {
             setIsLoading(false);
@@ -75,11 +37,11 @@ const IngredientsPage = () => {
         }
 
         try {
-            if (!API_ENDPOINTS.INGREDIENTS) {
+            if (!API_ENDPOINTS.RECIPES) {
                 throw new Error(t('dashboard.apiConfigError'));
             }
 
-            const response = await fetch(API_ENDPOINTS.INGREDIENTS, {
+            const response = await fetch(API_ENDPOINTS.RECIPES, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -97,123 +59,13 @@ const IngredientsPage = () => {
                 throw new Error(data.message || t('dashboard.fetchUserError', { statusCode: response.status }));
             }
 
-            setIngredients(data);
+            setRecipes(data);
         } catch (err) {
             setError(err.message || t('dashboard.loadUserDataError'));
             deleteCookie('userToken');
             navigate('/login');
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const handleOpenModal = (ingredient = null, mode = 'edit') => {
-        console.log(`Opening modal for ingredient: %o in ${mode} mode`, ingredient);
-        if (ingredient) {
-            setEditingIngredient(ingredient);
-            const formDataFromIngredient = {
-                ...initialFormState,
-                english: ingredient.english || '',
-                spanish: ingredient.spanish || '',
-                catalan: ingredient.catalan || '',
-                nutritionalValuesPer100G: ingredient.nutritional_values_per_100g
-                    ? { ...initialFormState.nutritionalValuesPer100G, ...ingredient.nutritional_values_per_100g }
-                    : { ...initialFormState.nutritionalValuesPer100G },
-                isGlutenFree: ingredient.hasOwnProperty('is_gluten_free') ? ingredient.is_gluten_free : initialFormState.isGlutenFree,
-                isVegan: ingredient.hasOwnProperty('is_vegan') ? ingredient.is_vegan : initialFormState.isVegan,
-                isVegetarian: ingredient.hasOwnProperty('is_vegetarian') ? ingredient.is_vegetarian : initialFormState.isVegetarian,
-            };
-            setFormData(formDataFromIngredient);
-        } else {
-            setEditingIngredient(null);
-            setFormData(initialFormState);
-        }
-        setFormError(null);
-        setIsEditMode(mode === 'edit');
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        console.log("handleCloseModal ha sido llamada. Cerrando modal.");
-        setIsModalOpen(false);
-        setEditingIngredient(null);
-        setIsEditMode(false);
-        setFormData(initialFormState);
-        setFormError(null);
-    };
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-    };
-
-    const handleNutritionalChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            nutritionalValuesPer100G: {
-                ...prev.nutritionalValuesPer100G,
-                [name]: value === '' ? '' : parseFloat(value),
-            },
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setFormError(null);
-        setIsSubmitting(true);
-
-        const token = getCookie('userToken');
-        if (!token) {
-            navigate('/login');
-            setIsSubmitting(false);
-            return;
-        }
-
-        const payload = {
-            id: editingIngredient ? editingIngredient.id : undefined,
-            english: formData.english,
-            spanish: formData.spanish,
-            catalan: formData.catalan,
-            nutritional_values_per_100g: formData.nutritionalValuesPer100G,
-            is_gluten_free: formData.isGlutenFree,
-            is_vegan: formData.isVegan,
-            is_vegetarian: formData.isVegetarian,
-        };
-
-        if (!editingIngredient) {
-            delete payload.id;
-        }
-
-        try {
-            const url = API_ENDPOINTS.INGREDIENTS + '/update';
-            const method = 'PUT';
-
-            const response = await fetch(url, {
-                method: method,
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            const resultData = await response.json();
-
-            if (!response.ok) {
-                throw new Error(resultData.reason || resultData.message || `Failed to ${method === 'PUT' ? 'update' : 'create'} ingredient`);
-            }
-
-            if (editingIngredient) {
-                setIngredients(prev => prev.map(ing => (ing.id === editingIngredient.id ? resultData : ing)));
-            } else {
-                setIngredients(prev => [...prev, resultData]);
-            }
-            handleCloseModal();
-        } catch (err) {
-            setFormError(err.message);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -225,41 +77,28 @@ const IngredientsPage = () => {
         return <div className="p-8 text-center text-red-500"><p>{t('common.error')}: {error}</p></div>;
     }
 
-    const renderDetail = (label, value, key) => {
-        if (value === null || value === undefined || value === '') {
-            return null;
-        }
-        return (
-            <div key={key}>
-                <p className="text-sm font-medium text-gray-500">{label}</p>
-                <p className="mt-1 text-sm text-gray-900">{String(value)}</p>
-            </div>
-        );
-    };
-
-    const filteredIngredients = ingredients.filter(ing => {
+    const filteredRecipes = recipes.filter(ing => {
         const term = removeAccents(searchTerm.toLowerCase());
         return (
-            removeAccents(ing.english.toLowerCase()).includes(term) ||
-            removeAccents(ing.spanish.toLowerCase()).includes(term) ||
-            removeAccents(ing.catalan.toLowerCase()).includes(term)
+            removeAccents(ing.name.toLowerCase()).includes(term)
         );
     });
+
     return (
         <div className="container mx-auto p-4 md:p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">{t('ingredientsPage.title')}</h1>
-                <button
+                <h1 className="text-3xl font-bold text-gray-800">{t('recipesPage.title')}</h1>
+                {/* <button
                     onClick={() => handleOpenModal(null, 'edit')}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
                 >
-                    {t('ingredientsPage.addIngredient')}
-                </button>
+                    {t('recipesPage.addIngredient')}
+                </button> */}
             </div>
             <div className="mb-4">
                 <input
                     type="text"
-                    placeholder={t('ingredientsPage.searchPlaceholder')}
+                    placeholder={t('recipesPage.searchPlaceholder')}
                     className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -269,32 +108,30 @@ const IngredientsPage = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('ingredientsPage.nameEnglish')}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('ingredientsPage.nameSpanish')}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('ingredientsPage.nameCatalan')}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('ingredientsPage.actions')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('recipesPage.name')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('recipesPage.isDinner')}</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('recipesPage.actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredIngredients.length === 0 ? (
+                        {filteredRecipes.length === 0 ? (
                             <tr>
                                 <td colSpan="4" className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {searchTerm
-                                        ? t('ingredientsPage.noResults')
-                                        : t('ingredientsPage.noIngredients')}
+                                        ? t('recipesPage.noResults')
+                                        : t('recipesPage.noIngredients')}
                                 </td>
                             </tr>
                         ) : (
-                            filteredIngredients.map((ing) => (
-                            <tr key={ing.id} onClick={() => handleOpenModal(ing, 'view')} className="cursor-pointer hover:bg-gray-100 transition-colors duration-150">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.english}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.spanish}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.catalan}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button onClick={(e) => { e.stopPropagation(); handleOpenModal(ing, 'edit'); }} className="text-indigo-600 hover:text-indigo-900 mr-3">{t('common.edit')}</button>
-                                    {/* <button onClick={(e) => { e.stopPropagation(); handleDelete(ing.id); }} className="text-red-600 hover:text-red-900">{t('common.delete')}</button> */}
-                                </td>
-                            </tr>
+                            filteredRecipes.map((ing) => (
+                                <tr key={ing.id} onClick={() => handleOpenModal(ing, 'view')} className="cursor-pointer hover:bg-gray-100 transition-colors duration-150">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ing.isForDinner}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(ing, 'edit'); }} className="text-indigo-600 hover:text-indigo-900 mr-3">{t('common.edit')}</button>
+                                        {/* <button onClick={(e) => { e.stopPropagation(); handleDelete(ing.id); }} className="text-red-600 hover:text-red-900">{t('common.delete')}</button> */}
+                                    </td>
+                                </tr>
                             ))
                         )}
                     </tbody>
@@ -311,8 +148,8 @@ const IngredientsPage = () => {
                     >
                         <h2 className="text-2xl font-semibold mb-6">
                             {isEditMode
-                                ? (editingIngredient ? t('ingredientsPage.editIngredient') : t('ingredientsPage.addIngredient'))
-                                : t('ingredientsPage.viewIngredient')
+                                ? (editingIngredient ? t('recipesPage.editIngredient') : t('recipesPage.addIngredient'))
+                                : t('recipesPage.viewIngredient')
                             }
                         </h2>
                         {formError && <p className="mb-4 text-center text-sm text-red-600 bg-red-100 p-3 rounded-md">{formError}</p>}
@@ -320,72 +157,72 @@ const IngredientsPage = () => {
                             <form id="ingredient-form" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
-                                        <label htmlFor="english" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.nameEnglish')}</label>
+                                        <label htmlFor="english" className="block text-sm font-medium text-gray-700">{t('recipesPage.nameEnglish')}</label>
                                         <input type="text" name="english" id="english" value={formData.english} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                     </div>
                                     <div>
-                                        <label htmlFor="spanish" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.nameSpanish')}</label>
+                                        <label htmlFor="spanish" className="block text-sm font-medium text-gray-700">{t('recipesPage.nameSpanish')}</label>
                                         <input type="text" name="spanish" id="spanish" value={formData.spanish} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                     </div>
                                     <div>
-                                        <label htmlFor="catalan" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.nameCatalan')}</label>
+                                        <label htmlFor="catalan" className="block text-sm font-medium text-gray-700">{t('recipesPage.nameCatalan')}</label>
                                         <input type="text" name="catalan" id="catalan" value={formData.catalan} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                                     </div>
                                 </div>
 
                                 <fieldset className="mb-4 border p-4 rounded-md">
-                                    <legend className="text-lg font-medium text-gray-900 px-2">{t('ingredientsPage.nutritionalValues')}</legend>
+                                    <legend className="text-lg font-medium text-gray-900 px-2">{t('recipesPage.nutritionalValues')}</legend>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                                         <div>
-                                            <label htmlFor="calories" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.calories')}</label>
+                                            <label htmlFor="calories" className="block text-sm font-medium text-gray-700">{t('recipesPage.calories')}</label>
                                             <input type="number" name="calories" id="calories" value={formData.nutritionalValuesPer100G.calories} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="protein_g" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.protein')}</label>
+                                            <label htmlFor="protein_g" className="block text-sm font-medium text-gray-700">{t('recipesPage.protein')}</label>
                                             <input type="number" name="protein_g" id="protein_g" value={formData.nutritionalValuesPer100G.protein_g} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="carbohydrates_g" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.carbohydrates')}</label>
+                                            <label htmlFor="carbohydrates_g" className="block text-sm font-medium text-gray-700">{t('recipesPage.carbohydrates')}</label>
                                             <input type="number" name="carbohydrates_g" id="carbohydrates_g" value={formData.nutritionalValuesPer100G.carbohydrates_g} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="fat_g" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.fat')}</label>
+                                            <label htmlFor="fat_g" className="block text-sm font-medium text-gray-700">{t('recipesPage.fat')}</label>
                                             <input type="number" name="fat_g" id="fat_g" value={formData.nutritionalValuesPer100G.fat_g} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="fiber_g" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.fiber')}</label>
+                                            <label htmlFor="fiber_g" className="block text-sm font-medium text-gray-700">{t('recipesPage.fiber')}</label>
                                             <input type="number" name="fiber_g" id="fiber_g" value={formData.nutritionalValuesPer100G.fiber_g} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="vitamin_D" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.vitaminD')}</label>
+                                            <label htmlFor="vitamin_D" className="block text-sm font-medium text-gray-700">{t('recipesPage.vitaminD')}</label>
                                             <input type="number" name="vitamin_D" id="vitamin_D" value={formData.nutritionalValuesPer100G.vitamin_D} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="vitamin_B12" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.vitaminB12')}</label>
+                                            <label htmlFor="vitamin_B12" className="block text-sm font-medium text-gray-700">{t('recipesPage.vitaminB12')}</label>
                                             <input type="number" name="vitamin_B12" id="vitamin_B12" value={formData.nutritionalValuesPer100G.vitamin_B12} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="vitamin_C" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.vitaminC')}</label>
+                                            <label htmlFor="vitamin_C" className="block text-sm font-medium text-gray-700">{t('recipesPage.vitaminC')}</label>
                                             <input type="number" name="vitamin_C" id="vitamin_C" value={formData.nutritionalValuesPer100G.vitamin_C} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="iron" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.iron')}</label>
+                                            <label htmlFor="iron" className="block text-sm font-medium text-gray-700">{t('recipesPage.iron')}</label>
                                             <input type="number" name="iron" id="iron" value={formData.nutritionalValuesPer100G.iron} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="saturated_fat" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.saturatedFat')}</label>
+                                            <label htmlFor="saturated_fat" className="block text-sm font-medium text-gray-700">{t('recipesPage.saturatedFat')}</label>
                                             <input type="number" name="saturated_fat" id="saturated_fat" value={formData.nutritionalValuesPer100G.saturated_fat} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="unsaturated_fat" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.unsaturatedFat')}</label>
+                                            <label htmlFor="unsaturated_fat" className="block text-sm font-medium text-gray-700">{t('recipesPage.unsaturatedFat')}</label>
                                             <input type="number" name="unsaturated_fat" id="unsaturated_fat" value={formData.nutritionalValuesPer100G.unsaturated_fat} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="magnesium" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.magnesium')}</label>
+                                            <label htmlFor="magnesium" className="block text-sm font-medium text-gray-700">{t('recipesPage.magnesium')}</label>
                                             <input type="number" name="magnesium" id="magnesium" value={formData.nutritionalValuesPer100G.magnesium} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                         <div>
-                                            <label htmlFor="zinc" className="block text-sm font-medium text-gray-700">{t('ingredientsPage.zinc')}</label>
+                                            <label htmlFor="zinc" className="block text-sm font-medium text-gray-700">{t('recipesPage.zinc')}</label>
                                             <input type="number" name="zinc" id="zinc" value={formData.nutritionalValuesPer100G.zinc} onChange={handleNutritionalChange} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" step="any" />
                                         </div>
                                     </div>
@@ -394,38 +231,38 @@ const IngredientsPage = () => {
                                 <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="flex items-center">
                                         <input id="isGlutenFree" name="isGlutenFree" type="checkbox" checked={formData.isGlutenFree} onChange={handleChange} className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-                                        <label htmlFor="isGlutenFree" className="ml-2 block text-sm text-gray-900">{t('ingredientsPage.isGlutenFree')}</label>
+                                        <label htmlFor="isGlutenFree" className="ml-2 block text-sm text-gray-900">{t('recipesPage.isGlutenFree')}</label>
                                     </div>
                                     <div className="flex items-center">
                                         <input id="isVegan" name="isVegan" type="checkbox" checked={formData.isVegan} onChange={handleChange} className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-                                        <label htmlFor="isVegan" className="ml-2 block text-sm text-gray-900">{t('ingredientsPage.isVegan')}</label>
+                                        <label htmlFor="isVegan" className="ml-2 block text-sm text-gray-900">{t('recipesPage.isVegan')}</label>
                                     </div>
                                     <div className="flex items-center">
                                         <input id="isVegetarian" name="isVegetarian" type="checkbox" checked={formData.isVegetarian} onChange={handleChange} className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-                                        <label htmlFor="isVegetarian" className="ml-2 block text-sm text-gray-900">{t('ingredientsPage.isVegetarian')}</label>
+                                        <label htmlFor="isVegetarian" className="ml-2 block text-sm text-gray-900">{t('recipesPage.isVegetarian')}</label>
                                     </div>
                                 </div>
                             </form>
                         ) : (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-md bg-gray-50">
-                                    {renderDetail(t('ingredientsPage.nameEnglish'), formData.english, 'view-english-name')}
-                                    {renderDetail(t('ingredientsPage.nameSpanish'), formData.spanish, 'spanish-name')}
-                                    {renderDetail(t('ingredientsPage.nameCatalan'), formData.catalan, 'view-catalan-name')}
+                                    {renderDetail(t('recipesPage.nameEnglish'), formData.english, 'view-english-name')}
+                                    {renderDetail(t('recipesPage.nameSpanish'), formData.spanish, 'spanish-name')}
+                                    {renderDetail(t('recipesPage.nameCatalan'), formData.catalan, 'view-catalan-name')}
                                 </div>
                                 <fieldset className="border p-4 rounded-md">
-                                    <legend className="text-lg font-medium text-gray-900 px-2">{t('ingredientsPage.nutritionalValues')}</legend>
+                                    <legend className="text-lg font-medium text-gray-900 px-2">{t('recipesPage.nutritionalValues')}</legend>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                                         {Object.entries(formData.nutritionalValuesPer100G).map(([key, value]) => {
                                             const labelKey = nutritionalKeyToLabelMap[key];
-                                            return labelKey ? renderDetail(t(`ingredientsPage.${labelKey}`), value, key) : null;
+                                            return labelKey ? renderDetail(t(`recipesPage.${labelKey}`), value, key) : null;
                                         })}
                                     </div>
                                 </fieldset>
                                 <div className="flex space-x-4 p-4">
-                                    {formData.isGlutenFree && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{t('ingredientsPage.isGlutenFree')}</span>}
-                                    {formData.isVegan && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">{t('ingredientsPage.isVegan')}</span>}
-                                    {formData.isVegetarian && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">{t('ingredientsPage.isVegetarian')}</span>}
+                                    {formData.isGlutenFree && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{t('recipesPage.isGlutenFree')}</span>}
+                                    {formData.isVegan && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">{t('recipesPage.isVegan')}</span>}
+                                    {formData.isVegetarian && <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">{t('recipesPage.isVegetarian')}</span>}
                                 </div>
                             </div>
                         )}
@@ -465,4 +302,4 @@ const IngredientsPage = () => {
     );
 };
 
-export default IngredientsPage;
+export default RecipesPage;

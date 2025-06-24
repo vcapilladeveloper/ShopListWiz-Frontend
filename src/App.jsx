@@ -7,6 +7,7 @@ import HandleResetPasswordPage from './pages/HandleResetPasswordPage';
 import Dashboard from './pages/Dashboard';
 import IngredientsPage from './pages/IngredientsPage';
 import MainLayout from './components/MainLayout'; // Importar el MainLayout
+import RecipesPage from './pages/RecipesPage';
 
 function App() {
 	return (
@@ -21,7 +22,7 @@ function App() {
 				<Route element={<MainLayout />}>
 					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/ingredients" element={<IngredientsPage />} />
-					<Route path="/recipes" element={<Dashboard />} /> {/* Temporalmente apunta a Dashboard, idealmente a RecipesPage */}
+					<Route path="/recipes" element={<RecipesPage />} /> {/* Temporalmente apunta a Dashboard, idealmente a RecipesPage */}
 				</Route>
 
 				<Route path="*" element={<Welcome />} /> {/* Ruta para páginas no encontradas */}

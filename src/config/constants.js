@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: `${API_HOST}/api/resetPassword`,
     ME: `${API_HOST}/api/me`,
     INGREDIENTS: `${API_HOST}/api/ingredients`,
+    RECIPES: `${API_HOST}/api/dishes`,
 }; 
