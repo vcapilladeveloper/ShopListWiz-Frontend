@@ -82,7 +82,7 @@ const IngredientsPage = () => {
             const response = await fetch(API_ENDPOINTS.INGREDIENTS, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'x-api-key': import.meta.env.VITE_API_KEY,
                     'Content-Type': 'application/json',
                 },
             });
